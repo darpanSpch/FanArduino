@@ -1,0 +1,119 @@
+// Using this code, the car can be moved straight ahead, stopped, turned left or turned right using
+// bluetooth connection from any laptop or a mobile phone.
+
+include <SoftwareSerial.h>
+
+SoftwareSerial Genotronex(10, 11); // RX, TX
+int ledpin=13; // led on D13 will show blink on / off
+int BluetoothData; // the data given from Computer
+
+const int fan1_pin1 2;	// each fan has two input pins, or two wires
+const int fan1_pin2 3;	// and these four values are defined to denote these
+const int fan2_pin1 4;	// pins of both the fans. The fans should be connected to
+const int fan2_pin2 5;	// the arduino digital pins 2,3,4 and 5 respectively.
+						// we can make the values constant since the pins of the fans
+						// will be connected to arduino pins dedicatedly and wont need changing
+						
+
+void setup() {
+  // put your setup code here, to run once:
+  
+  Genotronex.begin(9600);
+  Serial.begin(9600);
+
+  Genotronex.println("Bluetooth On please press 1 or 0 blink LED ..");
+  pinMode(ledpin,OUTPUT);
+  
+  pinMode (fan1_pin1, OUTPUT);
+  pinMode (fan1_pin2, OUTPUT);
+  pinMode (fan2_pin1, OUTPUT);
+  pinMode (fan2_pin2, OUTPUT);
+  
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+   if (Genotronex.available()){
+	BluetoothData=Genotronex.read();
+	if(BluetoothData=='1'){   // if number 1 pressed, switch to forward condition ....
+	
+	Serial.println("Car is moving Forward");
+	motionForward();			// function for moving the car forward
+	delay(100);					// keep moving forward for 100 microseconds
+								// changing this delay could change the speed of motion
+	
+   }
+   
+  else if (BluetoothData=='0'){		// if number 0 pressed, switch to stop condition ....
+  
+   Serial.println("Car is being Stopped);
+   motionStop();				// function for stopping the motion
+   delay(100);
+   
+  }
+  
+  else if (BluetoothData=='2'){		// if number 2 pressed, turn the car left
+  
+	Serial.println("Car is turning Left");
+	motionLeft();			// function for moving the car Left
+	delay(100);
+	
+  }
+  
+  else if (BluetoothData=='3'){		// if number 3 pressed, turn the car right
+  
+  Serial.println("Car is turning Right");
+	motionRight();			// function for moving the car forward
+	delay(100);
+  
+  }
+  
+  motionReset();			// function to turn off all the fan pins, this can be used to remove the unusual effects of garbage values
+  delay(1);
+}
+delay(100);// prepare for next data ...
+}
+
+void motionForward() {
+// function to move the car in the forward direction
+
+digitalWrite(fan1_pin1, HIGH);	// Supply +5 V in the pin1 of fan1
+digitalWrite(fan1_pin2, LOW);	// Supply 0 V in the pin2 of fan1
+								// This will turn the fan1 ON
+digitalWrite(fan2_pin1_pin1, HIGH);	// Supply +5 V in the pin1 of fan2
+digitalWrite(fan2_pin2_pin2, LOW);	// Supply 0 V in the pin2 of fan2
+									// This will turn the fan2 ON
+}
+
+void motionStop() {
+// function to stop the motion of the car
+
+digitalWrite(fan1_pin1, LOW);	// Supply 0 V in the pin1 of fan1
+digitalWrite(fan1_pin2, LOW);	// Supply 0 V in the pin2 of fan1
+								// This will turn the fan1 OFF
+digitalWrite(fan2_pin1_pin1, LOW);	// Supply 0 V in the pin1 of fan2
+digitalWrite(fan2_pin2_pin2, LOW);	// Supply 0 V in the pin2 of fan2
+									// This will turn the fan2 OFF
+}
+
+void motionLeft() {
+// function to make the car turn left
+
+digitalWrite(fan1_pin1, HIGH);	// Supply +5 V in the pin1 of fan1
+digitalWrite(fan1_pin2, LOW);	// Supply 0 V in the pin2 of fan1
+								// This will turn the fan1 ON
+digitalWrite(fan2_pin1_pin1, LOW);	// Supply 0 V in the pin1 of fan2
+digitalWrite(fan2_pin2_pin2, LOW);	// Supply 0 V in the pin2 of fan2
+									// This will turn the fan2 OFF
+}
+
+void motionRight() {
+// function to make the car turn right
+
+digitalWrite(fan1_pin1, HIGH);	// Supply 0 V in the pin1 of fan1
+digitalWrite(fan1_pin2, LOW);	// Supply 0 V in the pin2 of fan1
+								// This will turn the fan1 OFF
+digitalWrite(fan2_pin1_pin1, HIGH);	// Supply +5 V in the pin1 of fan2
+digitalWrite(fan2_pin2_pin2, LOW);	// Supply 0 V in the pin2 of fan2
+									// This will turn the fan2 ON
+}
